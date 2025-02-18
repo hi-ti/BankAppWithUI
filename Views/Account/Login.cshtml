@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+@* <a href="c:\users\hiti.dudeja\source\repos\mvcapp1\mvcapp1\views\account\deposit.cshtml">c:\users\hiti.dudeja\source\repos\mvcapp1\mvcapp1\views\account\deposit.cshtml</a> *@
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="card shadow-sm p-5" style="max-width: 450px; width: 100%;">
+        <h2 class="text-center mb-4">Welcome Back</h2>
+        <form method="post" action="/Account/Login">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text"
+                       class="form-control"
+                       id="username"
+                       name="username"
+                       placeholder="Enter your username"
+                       required />
+            </div>
+
+            <div class="mb-4">
+                <label for="pin" class="form-label">PIN</label>
+                <input type="password"
+                       class="form-control"
+                       id="pin"
+                       name="pin"
+                       placeholder="Enter your PIN"
+                       required />
+            </div>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger mb-3" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            </div>
+
+            <p class="text-center mt-3 small">
+                Don't have an account? <a href="/Account/Register">Register here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+    }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+    .btn-primary {
+        padding: 12px 30px;
+        border-radius: 8px;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+</style>
