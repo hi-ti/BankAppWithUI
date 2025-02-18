@@ -2,3 +2,8 @@
 /Properties
 /wwwroot
 /appsettings.json
+/appsettings.Development.json
+/bin
+/obj
+/MVCApp1.csproj
+/MVCApp1.user.csproj
