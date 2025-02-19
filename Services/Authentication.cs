@@ -34,8 +34,8 @@ namespace MVCApp1.Services
 
         public BankUser? Login(string name, int pin)
         {
-            var user = _users.FirstOrDefault(u => u.Username == name && u.Pin == pin);
-            Console.Write(user + "\n login method ki line \n");
+            var user = _users.Find(u => u.Username == name && u.Pin == pin);
+            Console.Write("------------" + user + "---------------" + "\n login method ki line \n");
             if (user == null)
             {
                 Console.WriteLine("\nInvalid username or PIN.");

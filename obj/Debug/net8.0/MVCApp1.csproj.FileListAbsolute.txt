@@ -32,3 +32,4 @@ C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\refint\MVCApp
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.pdb
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.genruntimeconfig.cache
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\ref\MVCApp1.dll
+C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.sourcelink.json

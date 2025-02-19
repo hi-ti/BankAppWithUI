@@ -7,15 +7,32 @@ namespace MVCApp1.Controllers
     public class AccountController : Controller
     {
         private readonly Authentication _authService;
-        private readonly TransactionService _transactionService;
+        private readonly Operations _operations;
 
-        public AccountController(Authentication authService, TransactionService transactionService)
+        public AccountController(Authentication authService, Operations op)
         {
             _authService = authService; // Injected via DI
-            _transactionService = transactionService; // Injected via DI
+            _operations = op;
         }
 
+        [HttpGet]
         public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        public IActionResult Deposit()
+        {
+            return View();
+        }
+
+        public IActionResult Withdraw()
         {
             return View();
         }
@@ -31,10 +48,7 @@ namespace MVCApp1.Controllers
             return View();
         }
 
-        public IActionResult Login()
-        {
-            return View();
-        }
+
 
         [HttpPost]
         public IActionResult Login(string username, int pin)
@@ -42,34 +56,46 @@ namespace MVCApp1.Controllers
             var user = _authService.Login(username, pin);
             if (user != null)
             {
-                // Set the user in TransactionService
-                _transactionService.SetUser(user);
+                // Save the username in session
+                HttpContext.Session.SetString("Username", user.Username);
 
                 return RedirectToAction("Dashboard");
             }
+
             ViewBag.ErrorMessage = "Invalid credentials!";
             return View();
         }
 
+        //public IActionResult Dashboard()
+        //{
+        //    // Use _transactionService to display data
+        //    //var balance = _transactionService.CheckBalance();
+        //    //ViewBag.Balance = balance;
+        //    return View();
+        //}
+
         public IActionResult Dashboard()
         {
-            // Use _transactionService to display data
-            //var balance = _transactionService.CheckBalance();
-            //ViewBag.Balance = balance;
-            return View();
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction("Login");
+
+            var user = _authService.GetUser(username); // Get the user by username
+            if (user == null) return RedirectToAction("Login");
+
+            return View(user); // Pass the BankUser object to the view
         }
 
         [HttpPost]
-        public async Task<IActionResult> Deposit(int amount)
+        public async Task<IActionResult> Deposit(int Balance)
         {
-            await _transactionService.Deposit(amount);
+            await _operations.Deposit(Balance);
             return RedirectToAction("Dashboard");
         }
 
         [HttpPost]
         public async Task<IActionResult> Withdraw(int amount)
         {
-            await _transactionService.Withdraw(amount);
+            await _operations.Withdraw(amount);
             return RedirectToAction("Dashboard");
         }
     }

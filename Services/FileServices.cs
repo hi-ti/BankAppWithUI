@@ -27,6 +27,12 @@ namespace MVCApp1.Services
 
                 return JsonSerializer.Deserialize<List<BankUser>>(json, options) ?? new List<BankUser>();
             }
+            
+            catch (IOException e)
+            {
+                Console.WriteLine($"Error reading the file: {e.Message}");
+                return new List<BankUser>();
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading users: {ex.Message}");

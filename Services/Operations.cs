@@ -4,49 +4,93 @@ namespace MVCApp1.Services
 {
     public class Operations
     {
-        protected BankUser? _user; // Single user object
+        public BankUser? _user; // Single user object
         private readonly FileServices _fileService;
         private List<BankUser> _users; // Full user list from JSON
 
-        public Operations(BankUser user)
+        //_user = new Authentication.GetUser();
+        public Operations(FileServices fs)
         {
-            _fileService = new FileServices();
+            _fileService = fs;
             _users = _fileService.LoadUsers(); // Load all users from JSON
 
-            // Find the specific user by Username
-            _user = _users.Find(u => u.Username == user.Username);
+            //Find the specific user by Username
+            //_user = _users.FirstOrDefault(u => u.Username == _user.Username);
+
+            //if (_user == null)
+            //{
+            //    Console.WriteLine("User not found!");
+            //}
+        }
+        public void SetUser(BankUser user)
+        {
+            _user = _users.FirstOrDefault(u => u.Username == user.Username);
 
             if (_user == null)
             {
                 Console.WriteLine("User not found!");
+                //_user = user; // Assign a new user if not found
+                //_users.Add(user); // Optionally add the user to the list
             }
         }
 
         public async Task Deposit(int amount)
         {
-            if (_user == null) return;
+            if (_user == null)
+            {
+                Console.WriteLine("User not set. Please set a user first.");
+                return;
+            }
 
-            _user.Balance += amount;
-            await SaveChanges();
-            Console.WriteLine("Deposit successful!");
+            try
+            {
+                if (amount <= 0)
+                {
+                    throw new ArgumentException("Deposit amount must be greater than zero.");
+                }
+                _user.Balance += amount;
+                await SaveChanges();
+                AddTransaction($"Deposit Successful of ₹{amount} \n New Balance : {_user.Balance}");
+                Console.WriteLine($"Deposit Successful! New balance: Rs.{_user.Balance}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during deposit: {ex.Message}");
+            }
         }
 
         public async Task Withdraw(int amount)
         {
-            if (_user == null) return;
-
-            if (_user.Balance < amount)
+            if (_user == null)
             {
-                Console.WriteLine("Insufficient balance!");
+                Console.WriteLine("User not set. Please set a user first.");
                 return;
             }
 
-            _user.Balance -= amount;
-            await SaveChanges();
-            Console.WriteLine("Withdrawal successful!");
+            try
+            {
+                if (amount <= 0)
+                {
+                    throw new ArgumentException("Withdrawal amount must be greater than zero.");
+                }
+                if (_user.Balance < amount)
+                {
+                    throw new InvalidOperationException("Insufficient balance!");
+                }
+
+                _user.Balance -= amount;
+                await SaveChanges();
+                AddTransaction($"Withdrawal Successful of ₹{amount} \n New Balance : {_user.Balance}");
+                Console.WriteLine($"Withdrawal Successful! New balance: Rs.{_user.Balance}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during withdrawal: {ex.Message}");
+            }
         }
 
-        protected void UpdateBalance(int amount)
+
+        public void UpdateBalance(int amount)
         {
             if (_user == null) return;
 
@@ -54,26 +98,26 @@ namespace MVCApp1.Services
             Console.WriteLine("Balance updated successfully!");
         }
 
-        //protected void AddTransaction(string transaction)
-        //{
-        //    if (_user == null) return;
+        protected void AddTransaction(string transaction)
+        {
+            if (_user == null) return;
 
-        //     _user.TransactionHist.Add(transaction);
+            _user.TransactionHist.Add(transaction);
 
-        //    Console.WriteLine($"Transaction added: {transaction}");
-        //}
+            Console.WriteLine($"Transaction added: {transaction}");
+        }
 
 
-        //public void ShowTransactionHistory()
-        //{
-        //    if (_user == null) return;
+        public void ShowTransactionHistory()
+        {
+            if (_user == null) return;
 
-        //    Console.WriteLine("\nTransaction History:");
-        //    foreach (string transaction in _user.TransactionHist)
-        //    {
-        //        Console.WriteLine(transaction);
-        //    }
-        //}
+            Console.WriteLine("\nTransaction History:");
+            foreach (string transaction in _user.TransactionHist)
+            {
+                Console.WriteLine(transaction);
+            }
+        }
 
         public void CheckBalance()
         {
@@ -82,7 +126,7 @@ namespace MVCApp1.Services
             Console.WriteLine($"Your current balance is: Rs.{_user.Balance}");
         }
 
-        private async Task SaveChanges()
+        public async Task SaveChanges()
         {
             var index = _users.FindIndex(u => u.Username == _user.Username);
             if (index != -1)

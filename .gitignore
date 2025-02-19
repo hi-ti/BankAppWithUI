@@ -1,9 +1,9 @@
-/Dependencies
-/Properties
-/wwwroot
-/appsettings.json
-/appsettings.Development.json
-/bin
-/obj
+/Dependencies/
+/Properties/
+/wwwroot/
+!appsettings.json
+!appsettings.Development.json
+/bin/
+/obj/
 /MVCApp1.csproj
 /MVCApp1.user.csproj
