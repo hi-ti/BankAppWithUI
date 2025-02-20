@@ -86,16 +86,35 @@ namespace MVCApp1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Deposit(int Balance)
+        public async Task<IActionResult> Deposit(int amount)
         {
-            await _operations.Deposit(Balance);
+            Console.WriteLine($"Received amount: ₹{amount}");
+            // Debugging log or breakpoint to verify the value
+
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction("Login");
+
+            var user = _authService.GetUser(username);
+            if (user == null) return RedirectToAction("Login");
+
+            await _operations.Deposit(user, amount);
             return RedirectToAction("Dashboard");
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Withdraw(int amount)
         {
-            await _operations.Withdraw(amount);
+            Console.WriteLine($"Recieved amount: Rs.{amount}");
+
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction("Login");
+
+            var user = _authService.GetUser(username);
+            if (user == null) return RedirectToAction("Login");
+
+            await _operations.Withdraw(user, amount);
             return RedirectToAction("Dashboard");
         }
     }

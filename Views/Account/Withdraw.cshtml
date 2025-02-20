@@ -9,17 +9,17 @@
 <div class="container min-vh-100 d-flex align-items-center justify-content-center">
     <div class="card shadow-sm p-5" style="max-width: 450px; width: 100%">
         <h2 class="text-center mb-4">Mention the amount you would like to withdraw</h2>
-        <form method="post" action="/Account/Withdraw">
+        <form method="post" asp-action="Withdraw">
             <div class="mb-3">
-                <label for="balance" class="form-label">Enter amount</label>
+                <label for="amount" class="form-label">Enter amount</label>
                 <div class="input-group">
                     <span class="input-group-text">₹</span>
                     <input type="number"
                            class="form-control"
-                           id="balance"
-                           name="Balance"
+                           id="amount"
+                           name="amount"
                            placeholder="Enter the amount"
-                           min="0"
+                           min="1"
                            required />
                 </div>
             </div>

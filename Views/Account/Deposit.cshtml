@@ -11,16 +11,16 @@
         <h2 class="text-center mb-4">Mention the amount you would like to deposit</h2>
         <form method="post" asp-action="Deposit">
             <div class="mb-3">
-                <label for="balance" class="form-label">Enter amount</label>
+                <label for="amount" class="form-label">Enter amount</label>
                 <div class="input-group">
                     <span class="input-group-text">₹</span>
                     <input type="number"
-                        class="form-control"
-                        id="balance"
-                        name="Balance"
-                        placeholder="Enter the amount"
-                        min="0"
-                        required />
+                           class="form-control"
+                           id="amount"
+                           name="amount"
+                           placeholder="Enter the amount"
+                           min="1"
+                           required />
                 </div>
             </div>
 
@@ -28,6 +28,7 @@
                 <button type="submit" class="btn btn-primary btn-lg">Deposit</button>
             </div>
         </form>
+
     </div>
 </div>
 

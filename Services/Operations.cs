@@ -34,24 +34,26 @@ namespace MVCApp1.Services
             }
         }
 
-        public async Task Deposit(int amount)
+        public async Task Deposit(BankUser user, int amount)
         {
-            if (_user == null)
+            if (user == null)
             {
-                Console.WriteLine("User not set. Please set a user first.");
+                Console.WriteLine("No user is logged in. Please log in first.");
                 return;
             }
 
             try
             {
-                if (amount <= 0)
+                if (amount < 0)
                 {
                     throw new ArgumentException("Deposit amount must be greater than zero.");
                 }
-                _user.Balance += amount;
-                await SaveChanges();
-                AddTransaction($"Deposit Successful of ₹{amount} \n New Balance : {_user.Balance}");
-                Console.WriteLine($"Deposit Successful! New balance: Rs.{_user.Balance}");
+
+                user.Balance += amount;
+
+                user.TransactionHistory.Add($"Deposited ₹{amount}. New balance: ₹{user.Balance}");
+                await SaveChanges(user); // Save the updated user to JSON
+                Console.WriteLine($"Deposit Successful! New balance: Rs.{user.Balance}");
             }
             catch (Exception ex)
             {
@@ -59,29 +61,30 @@ namespace MVCApp1.Services
             }
         }
 
-        public async Task Withdraw(int amount)
+
+        public async Task Withdraw(BankUser user, int amount)
         {
-            if (_user == null)
+            if (user == null)
             {
-                Console.WriteLine("User not set. Please set a user first.");
+                Console.WriteLine("No user is logged in. Please set a user first.");
                 return;
             }
 
             try
             {
-                if (amount <= 0)
+                if (amount < 0)
                 {
                     throw new ArgumentException("Withdrawal amount must be greater than zero.");
                 }
-                if (_user.Balance < amount)
+                if (user.Balance < amount)
                 {
                     throw new InvalidOperationException("Insufficient balance!");
                 }
 
-                _user.Balance -= amount;
-                await SaveChanges();
-                AddTransaction($"Withdrawal Successful of ₹{amount} \n New Balance : {_user.Balance}");
-                Console.WriteLine($"Withdrawal Successful! New balance: Rs.{_user.Balance}");
+                user.Balance -= amount;
+                user.TransactionHistory.Add($"Withdrawn ₹{amount}. New balance: ₹{user.Balance}");
+                await SaveChanges(user);
+                Console.WriteLine($"Withdrawal Successful! New balance: Rs.{user.Balance}");
             }
             catch (Exception ex)
             {
@@ -97,28 +100,6 @@ namespace MVCApp1.Services
             _user.Balance += amount;
             Console.WriteLine("Balance updated successfully!");
         }
-
-        protected void AddTransaction(string transaction)
-        {
-            if (_user == null) return;
-
-            _user.TransactionHist.Add(transaction);
-
-            Console.WriteLine($"Transaction added: {transaction}");
-        }
-
-
-        public void ShowTransactionHistory()
-        {
-            if (_user == null) return;
-
-            Console.WriteLine("\nTransaction History:");
-            foreach (string transaction in _user.TransactionHist)
-            {
-                Console.WriteLine(transaction);
-            }
-        }
-
         public void CheckBalance()
         {
             if (_user == null) return;
@@ -126,15 +107,16 @@ namespace MVCApp1.Services
             Console.WriteLine($"Your current balance is: Rs.{_user.Balance}");
         }
 
-        public async Task SaveChanges()
+        private async Task SaveChanges(BankUser user)
         {
-            var index = _users.FindIndex(u => u.Username == _user.Username);
+            var index = _users.FindIndex(u => u.Username == user.Username);
             if (index != -1)
             {
-                _users[index] = _user; // Update the user in the list
+                _users[index] = user; // Update the user in the list
                 _fileService.SaveUsers(_users); // Save the entire list
-                Console.WriteLine("Changes saved");
+                Console.WriteLine("Changes saved successfully!");
             }
         }
+
     }
 }

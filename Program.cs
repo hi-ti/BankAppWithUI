@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
-
 builder.Services.AddSingleton<FileServices>();
 builder.Services.AddSingleton<Authentication>();
 builder.Services.AddScoped<Operations>();

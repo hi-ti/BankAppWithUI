@@ -26,6 +26,8 @@ namespace MVCApp1.Services
 
             BankUser user = new BankUser()
             { Username = name, Pin = pin, Balance = balance };
+
+            user.TransactionHistory.Add($"Created a new account with balance: ₹{balance}");
             _users.Add(user);
             _fs.SaveUsers(_users);
 
@@ -33,7 +35,7 @@ namespace MVCApp1.Services
         }
 
         public BankUser? Login(string name, int pin)
-        {
+         {
             var user = _users.Find(u => u.Username == name && u.Pin == pin);
             Console.Write("------------" + user + "---------------" + "\n login method ki line \n");
             if (user == null)
