@@ -4,32 +4,31 @@
 
 <div class="dashboard-container py-5">
     <!-- Welcome Card -->
-    <div class="welcome-card mb-5">
-        <div class="card bg-gradient-primary shadow-lg p-4 mb-4">
+    <div class="welcome-card mb-4">
+        <div class="card bg-gradient-primary shadow-lg p-4">
             <div class="row align-items-center">
-                <div class="col-md-6">
+                <div class="col-md-7">
                     <h2 class="text-white mb-1 fw-bold">Welcome, @Model.Username</h2>
-                    <p class="text-white-50">Account Dashboard</p>
+                    <p class="text-white-50">Your Personal Banking Dashboard</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <span class="badge bg-white text-primary mb-2">Current Balance</span>
-                    <h3 class="text-white mb-0">₹@Model.Balance.ToString("N0")</h3>
+                <div class="col-md-5 text-md-end">
+                    <div class="balance-display p-3 rounded-lg">
+                        <span class="badge bg-white text-primary mb-2">Current Balance</span>
+                        <h3 class="text-white mb-0">₹@Model.Balance.ToString("N0")</h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Action Cards -->
-    <div class="row g-4 mb-5">
+    <div class="row g-2 mb-5">
         <!-- Deposit Card -->
         <div class="col-md-6 col-lg-3">
             <a href="/Account/Deposit" class="text-decoration-none">
                 <div class="action-card shadow-sm h-100 p-4 text-center">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-wallet2 fs-1"></i>
-                    </div>
                     <h4 class="fw-bold">Deposit</h4>
-                    <p class="text-muted mb-0">Add funds to your account</p>
+                    <p class="text-muted mb-3">Add funds to your account</p>
                 </div>
             </a>
         </div>
@@ -38,22 +37,59 @@
         <div class="col-md-6 col-lg-3">
             <a href="/Account/Withdraw" class="text-decoration-none">
                 <div class="action-card shadow-sm h-100 p-4 text-center">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-cash-stack fs-1"></i>
-                    </div>
                     <h4 class="fw-bold">Withdraw</h4>
-                    <p class="text-muted mb-0">Withdraw funds from your account</p>
+                    <p class="text-muted mb-3">Withdraw funds from your account</p>
                 </div>
             </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="action-card shadow-sm h-100 p-4 text-center">
+                <h5 class="fw-bold">
+                    @* <i class="bi bi-shield-lock me-2 text-primary"></i> *@
+                    Request Admin Role
+                </h5>
+                <p class="text-muted mb-3">
+                    Apply for administrative privileges to manage banking operations.
+                </p>
+                <form method="post" asp-action="RequestAdminRole">
+                    <button type="submit" class="btn btn-primary btn-block w-100 @(Model.IsAdminRequestPending ? "disabled" : "")"
+                    @(Model.IsAdminRequestPending ? "disabled" : "")>
+                        <i class="bi bi-key me-2"></i>
+                        @(Model.IsAdminRequestPending ? "Request Pending" : "Request Admin Role")
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="action-card shadow-sm h-100 p-4 text-center">
+                <h5 class="fw-bold">
+                    @* <i class="bi bi-shield-lock me-2 text-primary"></i> *@
+                    Request Account Deletion
+                </h5>
+                <p class="text-muted mb-3">
+                    Submit a request to permanently delete your account and all data.
+                </p>
+                <form method="post" asp-action="RequestAccountDeletion">
+                    <button type="submit" class="btn btn-outline-danger btn-block w-100 @(Model.IsDeleteRequestPending ? "disabled" : "")"
+                    @(Model.IsDeleteRequestPending ? "disabled" : "")>
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        @(Model.IsDeleteRequestPending ? "Request Pending" : "Request Account Deletion")
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Transaction History Section -->
     <div class="transaction-section">
         <div class="card shadow-lg">
-            <div class="card-header d-flex align-items-center">
-                <i class="bi bi-clock-history me-2 text-primary"></i>
-                <h5 class="mb-0 fw-bold">Transaction History</h5>
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-clock-history me-2 text-primary fs-4"></i>
+                    <h5 class="mb-0 fw-bold">Transaction History</h5>
+                </div>
             </div>
             <div class="card-body p-0">
                 @if (Model.TransactionHistory != null && Model.TransactionHistory.Count > 0)
@@ -65,19 +101,39 @@
                                 <div class="d-flex align-items-center">
                                     @if (transaction.Contains("Deposit"))
                                     {
-                                        <span class="transaction-icon deposit"><i class="bi bi-arrow-down-circle"></i></span>
+                                        @*<span class="transaction-icon deposit"> *@
+                                            @*<i class="bi bi-arrow-down-circle"></i> *@
+										@* </span> *@
+                                        <div>
+                                            <h6 class="mb-1 fw-semibold deposit">Deposit</h6>
+                                            <p class="mb-0 text-muted small">@transaction</p>
+                                        </div>
                                     }
                                     else if (transaction.Contains("Withdraw"))
                                     {
-                                        <span class="transaction-icon withdraw"><i class="bi bi-arrow-up-circle"></i></span>
+                                        @* <span class="transaction-icon withdraw"> *@
+                                        @*     <i class="bi bi-arrow-up-circle"></i> *@
+                                        @*     </span> *@
+                                        <div>
+                                            <h6 class="mb-1 fw-semibold withdraw">Withdrawal</h6>
+                                            <p class="mb-0 text-muted small">@transaction</p>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <span class="transaction-icon"><i class="bi bi-info-circle"></i></span>
+                                        @* <span class="transaction-icon"> *@
+                                        @*     <i class="bi bi-info-circle"></i> *@
+                                        @* </span> *@
+                                        <div>
+                                            <h6 class="mb-1 fw-semibold">Info</h6>
+                                            <p class="mb-0 text-muted small">@transaction</p>
+                                        </div>
                                     }
-                                    <span>@transaction</span>
                                 </div>
-                                <span class="transaction-date text-muted small">@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                                <div class="text-end">
+                                    @* <span class="transaction-date text-muted small d-block">@DateTime.Now.ToString("MMM dd, yyyy")</span> *@
+                                    @* <span class="badge bg-light text-dark small">Completed</span> *@
+                                </div>
                             </li>
                         }
                     </ul>
@@ -85,11 +141,21 @@
                 else
                 {
                     <div class="empty-state p-5 text-center">
-                        <i class="bi bi-clock-history fs-1 text-muted mb-3"></i>
-                        <p class="text-muted mb-0">No transactions available yet.</p>
+                        <div class="empty-icon-wrapper mb-3">
+                            @* <i class="bi bi-clock-history fs-1 text-muted"></i> *@
+                        </div>
+                        <h5 class="text-muted mb-2">No Transactions Yet</h5>
+                        <p class="text-muted mb-4">Your transaction history will appear here once you make deposits or withdrawals.</p>
+                        <a href="/Account/Deposit" class="btn btn-outline-primary rounded-pill">
+                            @* <i class="bi bi-plus-circle me-2"></i> *@
+                            Make Your First Deposit
+                        </a>
                     </div>
                 }
             </div>
+            @* <div class="card-footer bg-white text-center"> *@
+            @*     <a href="#" class="btn btn-sm btn-link text-primary">View All Transactions</a> *@
+            @* </div> *@
         </div>
     </div>
 </div>
@@ -106,11 +172,38 @@
         border: none;
         border-radius: 15px;
         overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
+        .card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        }
 
     /* Welcome Card */
     .bg-gradient-primary {
         background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+
+    .balance-display {
+        backdrop-filter: blur(4px);
+    }
+
+    /* Stats Icons */
+    .stat-icon {
+        height: 50px;
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+
+    .bg-primary-light {
+        background-color: rgba(78, 115, 223, 0.1);
+    }
+
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
     }
 
     /* Action Cards */
@@ -136,6 +229,16 @@
         border-radius: 50%;
         margin: 0 auto;
         color: #4e73df;
+        transition: all 0.3s ease;
+    }
+
+    .withdraw-icon {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    .action-card:hover .icon-wrapper {
+        transform: scale(1.1);
     }
 
     /* Transaction List */
@@ -146,38 +249,63 @@
     }
 
     .transaction-item {
-        padding: 15px 20px;
+        padding: 20px;
         border-bottom: 1px solid rgba(0,0,0,0.05);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        transition: background-color 0.2s ease;
     }
+
+        .transaction-item:hover {
+            background-color: rgba(0,0,0,0.01);
+        }
 
         .transaction-item:last-child {
             border-bottom: none;
         }
 
+    .deposit {
+        color: #28a745;
+    }
+
+    .withdraw {
+        color: #dc3545;
+    }
+
     .transaction-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        margin-right: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        margin-right: 16px;
         background-color: #e9ecef;
         color: #495057;
     }
 
         .transaction-icon.deposit {
-            background-color: rgba(40, 167, 69, 0.1);
+            /* background-color: rgba(40, 167, 69, 0.1); */
             color: #28a745;
         }
 
         .transaction-icon.withdraw {
-            background-color: rgba(220, 53, 69, 0.1);
+            /* background-color: rgba(220, 53, 69, 0.1); */
             color: #dc3545;
         }
+
+    /* Empty State */
+    .empty-icon-wrapper {
+        height: 80px;
+        width: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0,0,0,0.03);
+        border-radius: 50%;
+        margin: 0 auto;
+    }
 
     /* Card Headers */
     .card-header {
@@ -185,7 +313,4 @@
         border-bottom: 1px solid rgba(0,0,0,0.05);
         padding: 1rem 1.5rem;
     }
-
-    /* Add this to your _Layout.cshtml or link to Bootstrap icons in your head tag */
-    /* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"> */
 </style>

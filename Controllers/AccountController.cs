@@ -9,9 +9,9 @@ namespace MVCApp1.Controllers
         private readonly Authentication _authService;
         private readonly Operations _operations;
 
-        public AccountController(Authentication authService, Operations op)
+        public AccountController(Authentication au, Operations op)
         {
-            _authService = authService; // Injected via DI
+            _authService = au; // Injected via DI
             _operations = op;
         }
 
@@ -66,14 +66,6 @@ namespace MVCApp1.Controllers
             return View();
         }
 
-        //public IActionResult Dashboard()
-        //{
-        //    // Use _transactionService to display data
-        //    //var balance = _transactionService.CheckBalance();
-        //    //ViewBag.Balance = balance;
-        //    return View();
-        //}
-
         public IActionResult Dashboard()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -101,8 +93,6 @@ namespace MVCApp1.Controllers
             return RedirectToAction("Dashboard");
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> Withdraw(int amount)
         {
@@ -115,6 +105,32 @@ namespace MVCApp1.Controllers
             if (user == null) return RedirectToAction("Login");
 
             await _operations.Withdraw(user, amount);
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpPost]
+        public IActionResult RequestAdminRole()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction("Login");
+
+            var user = _authService.GetUser(username);
+            if (user == null) return RedirectToAction("Login");
+
+            _operations.RequestAdminRole(user);
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpPost]
+        public IActionResult RequestAccountDeletion()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction("Login");
+
+            var user = _authService.GetUser(username);
+            if (user == null) return RedirectToAction("Login");
+
+            _operations.RequestDeleteAccount(user);
             return RedirectToAction("Dashboard");
         }
     }

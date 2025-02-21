@@ -6,13 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 
 builder.Services.AddSingleton<FileServices>();
 builder.Services.AddSingleton<Authentication>();
 builder.Services.AddScoped<Operations>();
-//builder.Services.AddScoped<TransactionService>();
-//builder.Services.AddScoped<PinValidation>();
 
 var app = builder.Build();
 
@@ -34,6 +33,10 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "{controller=Admin}/{action=Dashboard}/{id?}");
 
 
 app.Run();
