@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
+@using System.Globalization
 
 <div class="dashboard-container py-5">
     <!-- Welcome Card -->
@@ -8,11 +9,11 @@
         <div class="card bg-gradient-primary shadow-lg p-4">
             <div class="row align-items-center">
                 <div class="col-md-7">
-                    <h2 class="text-white mb-1 fw-bold">Welcome, @Model.Username</h2>
+                    <h2 class="text-white mb-1 fw-bold">Welcome, @Model.FirstName</h2>
                     <p class="text-white-50">Your Personal Banking Dashboard</p>
                 </div>
                 <div class="col-md-5 text-md-end">
-                    <div class="balance-display p-3 rounded-lg">
+                    <div class="balance-display p-2 rounded-lg">
                         <span class="badge bg-white text-primary mb-2">Current Balance</span>
                         <h3 class="text-white mb-0">₹@Model.Balance.ToString("N0")</h3>
                     </div>
@@ -81,8 +82,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Transaction History Section -->
     <div class="transaction-section">
         <div class="card shadow-lg">
             <div class="card-header d-flex justify-content-between align-items-center bg-white">
@@ -92,47 +91,34 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                @if (Model.TransactionHistory != null && Model.TransactionHistory.Count > 0)
+                @if (Model.Transactions != null)
                 {
                     <ul class="transaction-list">
-                        @foreach (var transaction in Model.TransactionHistory)
+                        @foreach (var transaction in ((IEnumerable<TransactionModel>)Model.Transactions)
+                       .OrderByDescending(t => DateTime.ParseExact(t.TimeOfTransaction, "MM/dd/yyyy hh:mm tt", CultureInfo.GetCultureInfo("en-US"))))
                         {
                             <li class="transaction-item">
                                 <div class="d-flex align-items-center">
-                                    @if (transaction.Contains("Deposit"))
-                                    {
-                                        @*<span class="transaction-icon deposit"> *@
-                                            @*<i class="bi bi-arrow-down-circle"></i> *@
-										@* </span> *@
-                                        <div>
-                                            <h6 class="mb-1 fw-semibold deposit">Deposit</h6>
-                                            <p class="mb-0 text-muted small">@transaction</p>
-                                        </div>
-                                    }
-                                    else if (transaction.Contains("Withdraw"))
-                                    {
-                                        @* <span class="transaction-icon withdraw"> *@
-                                        @*     <i class="bi bi-arrow-up-circle"></i> *@
-                                        @*     </span> *@
-                                        <div>
-                                            <h6 class="mb-1 fw-semibold withdraw">Withdrawal</h6>
-                                            <p class="mb-0 text-muted small">@transaction</p>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        @* <span class="transaction-icon"> *@
-                                        @*     <i class="bi bi-info-circle"></i> *@
-                                        @* </span> *@
-                                        <div>
-                                            <h6 class="mb-1 fw-semibold">Info</h6>
-                                            <p class="mb-0 text-muted small">@transaction</p>
-                                        </div>
-                                    }
+                                    <span class="transaction-icon @(transaction.Type == TransactionType.Deposit ? "deposit" : "withdraw")">
+                                        <i class="bi @(transaction.Type == TransactionType.Deposit ? "bi-arrow-down-circle" : "bi-arrow-up-circle")"></i>
+                                    </span>
+                                    <div>
+                                        <h6 class="mb-1 fw-semibold @(transaction.Type == TransactionType.Deposit ? "deposit" : "withdraw")">
+                                            @transaction.Type
+                                        </h6>
+                                        <p class="mb-0 text-muted small">
+                                            Amount: ₹@transaction.Amount.ToString("N0")
+                                            <span class="badge @(transaction.Status == TransactionStatus.Success ? "bg-success" : "bg-danger") ms-2">
+                                                @transaction.Status
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="text-end">
-                                    @* <span class="transaction-date text-muted small d-block">@DateTime.Now.ToString("MMM dd, yyyy")</span> *@
-                                    @* <span class="badge bg-light text-dark small">Completed</span> *@
+                                    <span class="text-muted">₹@transaction.UpdatedBalance</span>
+                                </div>
+                                <div class="text-end">
+                                    <span class="transaction-date text-muted small d-block">@transaction.TimeOfTransaction</span>
                                 </div>
                             </li>
                         }
@@ -142,22 +128,95 @@
                 {
                     <div class="empty-state p-5 text-center">
                         <div class="empty-icon-wrapper mb-3">
-                            @* <i class="bi bi-clock-history fs-1 text-muted"></i> *@
+                            <i class="bi bi-clock-history fs-1 text-muted"></i>
                         </div>
                         <h5 class="text-muted mb-2">No Transactions Yet</h5>
                         <p class="text-muted mb-4">Your transaction history will appear here once you make deposits or withdrawals.</p>
                         <a href="/Account/Deposit" class="btn btn-outline-primary rounded-pill">
-                            @* <i class="bi bi-plus-circle me-2"></i> *@
+                            <i class="bi bi-plus-circle me-2"></i>
                             Make Your First Deposit
                         </a>
                     </div>
                 }
             </div>
-            @* <div class="card-footer bg-white text-center"> *@
-            @*     <a href="#" class="btn btn-sm btn-link text-primary">View All Transactions</a> *@
-            @* </div> *@
         </div>
     </div>
+    <!-- Transaction History Section -->
+    @* <div class="transaction-section"> *@
+    @*     <div class="card shadow-lg"> *@
+    @*         <div class="card-header d-flex justify-content-between align-items-center bg-white"> *@
+    @*             <div class="d-flex align-items-center"> *@
+    @*                 <i class="bi bi-clock-history me-2 text-primary fs-4"></i> *@
+    @*                 <h5 class="mb-0 fw-bold">Transaction History</h5> *@
+    @*             </div> *@
+    @*         </div> *@
+    @*         <div class="card-body p-0"> *@
+    @*             @if (Model.TransactionHistory != null && Model.TransactionHistory.Count > 0) *@
+    @*             { *@
+    @*                 <ul class="transaction-list"> *@
+    @*                     @foreach (var transaction in Model.TransactionHistory) *@
+    @*                     { *@
+    @*                         <li class="transaction-item"> *@
+    @*                             <div class="d-flex align-items-center"> *@
+    @*                                 @if (transaction.Contains("Deposit")) *@
+    @*                                 { *@
+    @*                                     @*<span class="transaction-icon deposit"> *@ 
+    @*                                         @*<i class="bi bi-arrow-down-circle"></i> *@ 
+				@* 						@* </span> *@ 
+    @*                                     <div> *@
+    @*                                         <h6 class="mb-1 fw-semibold deposit">Deposit</h6> *@
+    @*                                         <p class="mb-0 text-muted small">@transaction</p> *@
+    @*                                     </div> *@
+    @*                                 } *@
+    @*                                 else if (transaction.Contains("Withdraw")) *@
+    @*                                 { *@
+    @*                                     @* <span class="transaction-icon withdraw"> *@
+    @*                                     @*     <i class="bi bi-arrow-up-circle"></i> *@
+    @*                                     @*     </span> *@
+    @*                                     <div> *@
+    @*                                         <h6 class="mb-1 fw-semibold withdraw">Withdrawal</h6> *@
+    @*                                         <p class="mb-0 text-muted small">@transaction</p> *@
+    @*                                     </div> *@
+    @*                                 } *@
+    @*                                 else *@
+    @*                                 { *@
+    @*                                     @* <span class="transaction-icon"> *@
+    @*                                     @*     <i class="bi bi-info-circle"></i> *@
+    @*                                     @* </span> *@
+    @*                                     <div> *@
+    @*                                         <h6 class="mb-1 fw-semibold">Info</h6> *@
+    @*                                         <p class="mb-0 text-muted small">@transaction</p> *@
+    @*                                     </div> *@
+    @*                                 } *@
+    @*                             </div> *@
+    @*                             <div class="text-end"> *@
+    @*                                 @* <span class="transaction-date text-muted small d-block">@DateTime.Now.ToString("MMM dd, yyyy")</span> *@
+    @*                                 @* <span class="badge bg-light text-dark small">Completed</span> *@
+    @*                             </div> *@
+    @*                         </li> *@
+    @*                     } *@
+    @*                 </ul> *@
+    @*             } *@
+    @*             else *@
+    @*             { *@
+    @*                 <div class="empty-state p-5 text-center"> *@
+    @*                     <div class="empty-icon-wrapper mb-3"> *@
+    @*                         @* <i class="bi bi-clock-history fs-1 text-muted"></i> *@
+    @*                     </div> *@
+    @*                     <h5 class="text-muted mb-2">No Transactions Yet</h5> *@
+    @*                     <p class="text-muted mb-4">Your transaction history will appear here once you make deposits or withdrawals.</p> *@
+    @*                     <a href="/Account/Deposit" class="btn btn-outline-primary rounded-pill"> *@
+    @*                         @* <i class="bi bi-plus-circle me-2"></i> *@
+    @*                         Make Your First Deposit *@
+    @*                     </a> *@
+    @*                 </div> *@
+    @*             } *@
+    @*         </div> *@
+    @*         @* <div class="card-footer bg-white text-center"> *@
+    @*         @*     <a href="#" class="btn btn-sm btn-link text-primary">View All Transactions</a> *@
+    @*         @* </div> *@
+    @*     </div> *@
+    @* </div> *@
 </div>
 
 <style>

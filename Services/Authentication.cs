@@ -17,9 +17,9 @@ namespace MVCApp1.Services
         {
             return _users.FirstOrDefault(x => x.Username == username);
         }
-        public BankUser Register(string name, int pin, int balance)
+        public BankUser Register(string name, string firstname, string lastname, int pin, int balance)
         {
-            //bool isFirstUser = !_users.Any();
+            bool isFirstUser = !_users.Any();
 
             if (_users.Any(u => u.Username == name))
             {
@@ -27,13 +27,17 @@ namespace MVCApp1.Services
             }
 
             BankUser user = new BankUser()
-            { Username = name, 
+            { Username = name,
+              FirstName = firstname,
+              LastName = lastname,
               Pin = pin,
               Balance = balance,
-              //Role = isFirstUser ? "admin" : "user" 
+              Role = isFirstUser ? "admin" : "user"
             };
 
-            user.TransactionHistory.Add($"Created a new account with balance: ₹{balance}");
+            TransactionModel transaction = new TransactionModel(user, balance, balance, TransactionType.Deposit, TransactionStatus.Success);
+
+            user.Transactions.Add(transaction);
             _users.Add(user);
             _fs.SaveUsers(_users);
 
@@ -43,14 +47,31 @@ namespace MVCApp1.Services
 
         public BankUser? Login(string name, int pin)
          {
-            var user = _users.Find(u => u.Username == name && u.Pin == pin);
-            Console.Write("------------" + user + "---------------" + "\n LOGIN HO GYAAAA \n");
-            if (user == null)
+            BankUser foundUser = null;
+            foreach (var u in _users)
             {
-                Console.WriteLine("\nInvalid username or PIN.");
-                return null;
+                Console.WriteLine($"Checking: {u.Username} vs {name}, {u.Pin} vs {pin}");
+                if (u.Username.Trim().Equals(name.Trim(), StringComparison.OrdinalIgnoreCase) && u.Pin == pin)
+                {
+                    foundUser = u;
+                    //return foundUser;
+                }
             }
-            return user;
+
+            if (foundUser == null)
+            {
+                Console.WriteLine("User not found.");
+            }
+            return foundUser;
+
+            //var user = _users.Find(u => u.Username == name && u.Pin == pin);
+            //Console.Write("------------" + user + "---------------" + "\n LOGIN HO GYAAAA \n");
+            //if (user == null)
+            //{
+            //    Console.WriteLine("\nInvalid username or PIN.");
+            //    return null;
+            //}
+            //return user;
         }
     }
 }

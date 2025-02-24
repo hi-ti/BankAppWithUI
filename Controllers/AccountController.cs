@@ -11,7 +11,7 @@ namespace MVCApp1.Controllers
 
         public AccountController(Authentication au, Operations op)
         {
-            _authService = au; // Injected via DI
+            _authService = au;
             _operations = op;
         }
 
@@ -42,28 +42,40 @@ namespace MVCApp1.Controllers
         {
             if (ModelState.IsValid)
             {
-                _authService.Register(user.Username, user.Pin, user.Balance);
+                _authService.Register(user.Username, user.FirstName, user.LastName, user.Pin, user.Balance);
                 return RedirectToAction("Login");
             }
             return View();
         }
 
-
-
         [HttpPost]
         public IActionResult Login(string username, int pin)
         {
             var user = _authService.Login(username, pin);
+
             if (user != null)
             {
-                // Save the username in session
                 HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("Role", user.Role); // Store user role in session
 
-                return RedirectToAction("Dashboard");
+                if (user.Role == "admin")
+                {
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Dashboard", "Account");
+                }
             }
 
-            ViewBag.ErrorMessage = "Invalid credentials!";
+            ViewBag.ErrorMessage = "Invalid username or password.";
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Dashboard()

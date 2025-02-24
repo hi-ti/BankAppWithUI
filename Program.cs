@@ -12,6 +12,7 @@ builder.Services.AddSession();
 builder.Services.AddSingleton<FileServices>();
 builder.Services.AddSingleton<Authentication>();
 builder.Services.AddScoped<Operations>();
+builder.Services.AddScoped<AdminOperations>();
 
 var app = builder.Build();
 

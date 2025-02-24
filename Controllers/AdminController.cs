@@ -5,114 +5,76 @@ namespace MVCApp1.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly Operations _operations;
+        private readonly AdminOperations _adminOp;
 
-        public AdminController(Operations operations)
+        public AdminController(AdminOperations adminOp)
         {
-            _operations = operations;
+            _adminOp = adminOp;
         }
 
         [HttpGet]
         public IActionResult Dashboard()
         {
-            // Get the currently logged-in user
-            var admin = _operations.GetLoggedInUser();
+            var admin = _adminOp.GetLoggedInUser();
 
-            // Ensure the logged-in user is an admin
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
-
-            // Fetch all users for the admin
-            var users = _operations.GetAllUsers();
-            return View(users); // Pass the list of users to the Admin Dashboard view
+            var users = _adminOp.GetAllUsers();
+            return View(users);
         }
 
         [HttpGet]
         public IActionResult UserDetails(string username)
         {
-            var admin = _operations.GetLoggedInUser();
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
+            var admin = _adminOp.GetLoggedInUser();
 
-            var user = _operations.GetUserByUsername(username);
+            var user = _adminOp.GetUserByUsername(username);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return View(user); // Render a new view to display the user's details
+            return View(user);
         }
 
         [HttpGet]
         public IActionResult Requests()
         {
-            var admin = _operations.GetLoggedInUser();
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
+            var admin = _adminOp.GetLoggedInUser();
 
-            var requests = _operations.GetAdminRequests(); // Fetch pending admin requests
+            var requests = _adminOp.GetAdminRequests();
             return View(requests);
         }
 
         [HttpGet]
         public IActionResult DeleteAccountRequests()
         {
-            var admin = _operations.GetLoggedInUser();
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
+            var admin = _adminOp.GetLoggedInUser();
 
-            var requests = _operations.GetDeleteAccountRequests(); // Fetch account deletion requests
+            var requests = _adminOp.GetDeleteAccountRequests();
             return View("DeleteAccountRequests", requests);
         }
 
         [HttpPost]
         public IActionResult ApproveAdminRequest(string username, bool approve)
         {
-            // Get the logged-in user
-            var admin = _operations.GetLoggedInUser();
+            var admin = _adminOp.GetLoggedInUser();
 
-            // Ensure the logged-in user is an admin
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
-
-            // Approve or reject the admin request
-            _operations.ApproveAdminRole(username, approve);
+            _adminOp.ApproveAdminRole(username, approve);
             return RedirectToAction("Dashboard");
         }
 
         [HttpPost]
         public IActionResult ApproveDeleteRequest(string username, bool approve)
         {
-            // Get the logged-in user
-            var admin = _operations.GetLoggedInUser();
-
-            // Ensure the logged-in user is an admin
-            if (admin == null || admin.Role != "admin")
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
+            var admin = _adminOp.GetLoggedInUser();
 
             if (approve)
             {
-                // Delete the user account
-                _operations.DeleteUserAccount(username);
+                _adminOp.DeleteUserAccount(username);
             }
             else
             {
-                // Reject the delete request
-                _operations.RejectDeleteRequest(username);
+                _adminOp.RejectDeleteRequest(username);
             }
-
             return RedirectToAction("Dashboard");
         }
     }

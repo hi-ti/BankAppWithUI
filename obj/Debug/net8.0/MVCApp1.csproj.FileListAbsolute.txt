@@ -14,6 +14,7 @@ C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.cspro
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.RazorAssemblyInfo.cache
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.RazorAssemblyInfo.cs
+C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.sourcelink.json
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\scopedcss\bundle\MVCApp1.styles.css
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\scopedcss\projectbundle\MVCApp1.bundle.scp.css
@@ -32,4 +33,3 @@ C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\refint\MVCApp
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.pdb
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.genruntimeconfig.cache
 C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\ref\MVCApp1.dll
-C:\Users\hiti.dudeja\source\repos\MVCApp1\MVCApp1\obj\Debug\net8.0\MVCApp1.sourcelink.json

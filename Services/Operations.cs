@@ -1,4 +1,5 @@
 ﻿using MVCApp1.Models;
+using TransactionStatus = MVCApp1.Models.TransactionStatus;
 
 namespace MVCApp1.Services
 {
@@ -7,23 +8,12 @@ namespace MVCApp1.Services
         public BankUser? _user; // Single user object
         private readonly FileServices _fileService;
         private List<BankUser> _users;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public Operations(FileServices fs, IHttpContextAccessor hca)
+        private TransactionModel _transactions;
+        public Operations(FileServices fs)
         {
             _fileService = fs;
-            _users = _fileService.LoadUsers(); // Load all users from JSON
-            _httpContextAccessor = hca;
+            _users = _fileService.LoadUsers();
         }
-        public void SetUser(BankUser user)
-        {
-            _user = _users.FirstOrDefault(u => u.Username == user.Username);
-
-            if (_user == null)
-            {
-                Console.WriteLine("User not found!");
-            }
-        }
-
         public async Task Deposit(BankUser user, int amount)
         {
             if (user == null)
@@ -34,6 +24,7 @@ namespace MVCApp1.Services
 
             try
             {
+
                 if (amount < 0)
                 {
                     throw new ArgumentException("Deposit amount must be greater than zero.");
@@ -41,7 +32,10 @@ namespace MVCApp1.Services
 
                 user.Balance += amount;
 
-                user.TransactionHistory.Add($"Deposited ₹{amount}. New balance: ₹{user.Balance}");
+                int updatedBalance = user.Balance;
+                TransactionModel transaction = new TransactionModel(user, amount, updatedBalance, TransactionType.Deposit, TransactionStatus.Success);
+
+                user.Transactions.Add(transaction);
                 await SaveChanges(user); // Save the updated user to JSON
                 Console.WriteLine($"Deposit Successful! New balance: Rs.{user.Balance}");
             }
@@ -51,6 +45,7 @@ namespace MVCApp1.Services
             }
         }
 
+ 
 
         public async Task Withdraw(BankUser user, int amount)
         {
@@ -62,17 +57,29 @@ namespace MVCApp1.Services
 
             try
             {
+                //    int updatedBalance = user.Balance;
+                //    TransactionModel transaction = new TransactionModel(user, amount, updatedBalance, TransactionType.Withdrawal, TransactionStatus.Success);
+
                 if (amount < 0)
                 {
                     throw new ArgumentException("Withdrawal amount must be greater than zero.");
                 }
                 if (user.Balance < amount)
                 {
-                    throw new InvalidOperationException("Insufficient balance!");
+                int updatedBalance = user.Balance;
+                TransactionModel transaction = new TransactionModel(user, amount, updatedBalance, TransactionType.Withdrawal, TransactionStatus.Failed);
+                user.Transactions.Add(transaction);
                 }
-
-                user.Balance -= amount;
-                user.TransactionHistory.Add($"Withdrawn ₹{amount}. New balance: ₹{user.Balance}");
+                else
+                {
+                    user.Balance -= amount;
+                    int updatedBalance = user.Balance;
+                    TransactionModel transaction = new TransactionModel(user, amount, updatedBalance, TransactionType.Withdrawal, TransactionStatus.Success);
+                    user.Transactions.Add(transaction);
+                }
+                //user.Balance -= amount;
+                //user.Transactions.Add(transaction);
+                //user.TransactionHistory.Add($"Withdrawn ₹{amount}. New balance: ₹{user.Balance}");
                 await SaveChanges(user);
                 Console.WriteLine($"Withdrawal Successful! New balance: Rs.{user.Balance}");
             }
@@ -82,14 +89,6 @@ namespace MVCApp1.Services
             }
         }
 
-
-        public void UpdateBalance(int amount)
-        {
-            if (_user == null) return;
-
-            _user.Balance += amount;
-            Console.WriteLine("Balance updated successfully!");
-        }
         public void CheckBalance()
         {
             if (_user == null) return;
@@ -143,112 +142,6 @@ namespace MVCApp1.Services
 
             // Save changes to the database (if applicable)
             SaveChanges(user);
-        }
-
-
-        public void ApproveAdminRole(string username, bool approve)
-        {
-            var user = _users.FirstOrDefault(u => u.Username == username);
-
-            if (user == null)
-            {
-                Console.WriteLine("User not found.");
-                return;
-            }
-
-            if (user.Role == "Admin")
-            {
-                Console.WriteLine("User is already an admin.");
-                return;
-            }
-
-            if (!user.IsAdminRequestPending)
-            {
-                Console.WriteLine("No admin request is pending for this user.");
-                return;
-            }
-
-            if (approve)
-            {
-                user.Role = "Admin";
-                Console.WriteLine($"{user.Username} is now an admin.");
-            }
-            else
-            {
-                Console.WriteLine($"Admin request for {user.Username} was rejected.");
-            }
-
-            user.IsAdminRequestPending = false;
-            SaveChanges(user);
-        }
-
-        public BankUser? GetLoggedInUser()
-        {
-            // Get the username of the logged-in user from the session
-            var username = _httpContextAccessor.HttpContext?.Session.GetString("Username");
-            if (string.IsNullOrEmpty(username)) return null;
-
-            // Find the user by username
-            return _users.FirstOrDefault(u => u.Username == username);
-        }
-
-        public List<BankUser> GetAllUsers()
-        {
-            return _users; // Return the full list of users
-        }
-
-        public List<BankUser> GetAdminRequests()
-        {
-            return _users.Where(u => u.IsAdminRequestPending).ToList();
-        }
-
-        public List<BankUser> GetDeleteAccountRequests()
-        {
-            return _users.Where(u => u.IsDeleteRequestPending).ToList();
-        }
-
-        public BankUser GetUserByUsername(string username)
-        {
-            return _users.FirstOrDefault(user => user.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public void DeleteUserAccount(string username)
-        {
-            var user = _users.FirstOrDefault(u => u.Username == username);
-
-            if (user == null)
-            {
-                Console.WriteLine("User not found.");
-                return;
-            }
-
-            if (!user.IsDeleteRequestPending)
-            {
-                Console.WriteLine("No delete request is pending for this user.");
-                return;
-            }
-
-            // Remove the user from the list
-            _users.Remove(user);
-
-            // Save the updated list to the JSON file
-            _fileService.SaveUsers(_users);
-            Console.WriteLine($"User {username} has been deleted.");
-        }
-
-        public void RejectDeleteRequest(string username)
-        {
-            var user = _users.FirstOrDefault(u => u.Username == username);
-
-            if (user == null)
-            {
-                Console.WriteLine("User not found.");
-                return;
-            }
-
-            user.IsDeleteRequestPending = false;
-            SaveChanges(user);
-            Console.WriteLine($"Delete request for {username} was rejected.");
         }
     }
 }

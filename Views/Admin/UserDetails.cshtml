@@ -9,7 +9,7 @@
     <div class="card bg-gradient-info shadow-lg p-4 mb-4">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h2 class="text-white mb-1 fw-bold">User Profile: @Model.Username</h2>
+                <h2 class="text-white mb-1 fw-bold">User Profile: @Model.FirstName</h2>
                 <p class="text-white-50">Detailed account information and transaction history</p>
             </div>
             <div class="col-md-4 text-md-end">
@@ -27,11 +27,11 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <div class="avatar-circle avatar-lg mx-auto mb-3 bg-info text-white">
-                            @Model.Username.Substring(0, 1).ToUpper()
+                        <div class="avatar-circle avatar-lg mx-auto mb-3 bg-infoo text-white">
+                            @Model.FirstName.Substring(0, 1).ToUpper()
                         </div>
-                        <h4 class="fw-bold">@Model.Username</h4>
-                        <span class="badge bg-@(Model.Role == "admin" ? "primary" : "secondary") rounded-pill">@Model.Role</span>
+                        <h4 class="fw-bold">@Model.FirstName</h4>
+                        <span class="badge bg-@(Model.Role == "admin" ? "primary" : "secondary") rounded-lg p-2">@Model.Role</span>
                     </div>
 
                     <div class="info-item mb-3 p-3 rounded bg-light">
@@ -40,9 +40,9 @@
                                 <span class="text-muted small">Current Balance</span>
                                 <h5 class="mb-0 fw-bold">₹@Model.Balance.ToString("N0")</h5>
                             </div>
-                            <div class="icon-wrapper info">
-                                <i class="bi bi-wallet2"></i>
-                            </div>
+                            @* <div class="icon-wrapper info"> *@
+                            @*     <i class="bi bi-wallet2"></i> *@
+                            @* </div> *@
                         </div>
                     </div>
 
@@ -50,11 +50,11 @@
                         <div class="d-flex justify-content-between">
                             <div>
                                 <span class="text-muted small">Total Transactions</span>
-                                <h5 class="mb-0 fw-bold">@Model.TransactionHistory.Count</h5>
+                                <h5 class="mb-0 fw-bold">@Model.Transactions.Count</h5>
                             </div>
-                            <div class="icon-wrapper info">
-                                <i class="bi bi-arrow-left-right"></i>
-                            </div>
+                            @* <div class="icon-wrapper info"> *@
+                            @*     <i class="bi bi-arrow-left-right"></i> *@
+                            @* </div> *@
                         </div>
                     </div>
 
@@ -77,9 +77,9 @@
                                     }
                                 </h5>
                             </div>
-                            <div class="icon-wrapper info">
-                                <i class="bi bi-shield-check"></i>
-                            </div>
+                            @* <div class="icon-wrapper info"> *@
+                            @*     <i class="bi bi-shield-check"></i> *@
+                            @* </div> *@
                         </div>
                     </div>
                 </div>
@@ -94,43 +94,48 @@
                         @* <i class="bi bi-clock-history me-2 text-info"></i> *@
                         Transaction History
                     </h5>
-                    <span class="badge bg-info rounded-pill">@Model.TransactionHistory.Count Records</span>
+                    <span class="badge bg-infoo rounded-lg p-2">@Model.Transactions.Count Records</span>
                 </div>
                 <div class="card-body p-2">
-                    @if (Model.TransactionHistory != null && Model.TransactionHistory.Count > 0)
+                    @if (Model.Transactions != null && Model.Transactions.Count > 0)
                     {
                         <ul class="transaction-list">
-                            @foreach (var transaction in Model.TransactionHistory)
+                            @foreach (var transaction in Model.Transactions)
                             {
-                                @if (transaction.Contains("Deposit"))
+                                @* @if (transaction.Contains("Deposit")) *@
+                                @if (transaction.Type == TransactionType.Deposit)
                                 {
                                     <li class="transaction-item">
-                                        <div class="deposit-background p-3 w-auto">
-                                        <div class="d-flex align-items-center w-100">
+                                        <div class="align-items-center w-100 p-3 deposit-background rounded-3">
                                             <div class="">
                                                 <h6 class="mb-1 fw-semibold deposit">Deposit</h6>
-                                                <p class="mb-0 text-muted small">@transaction</p>
+                                                <p class="mb-0 text-muted small">@transaction.Amount</p>
+                                                <p class="mb-0 text-muted small">@transaction.TimeOfTransaction</p>
+                                                <p class="mb-0 text-muted small">@transaction.Status</p>
+                                                <p class="mb-0 text-muted small">@transaction.UpdatedBalance</p>
                                             </div>
-                                            </div>
-                                    </div>
+                                        </div>
                                     </li>
                                 }
-                                else if (transaction.Contains("Withdraw"))
+                                else if (transaction.Type == TransactionType.Withdrawal)
                                 {
-                                    <li class="transaction-item withdraw-background">
-                                        <div class="d-flex align-items-center">
+                                    <li class="transaction-item">
+                                        <div class="align-items-center w-100 p-3 withdraw-background rounded-3">
                                             <div class="">
-                                                <h6 class="mb-1 fw-semibold">Withdraw</h6>
-                                                <p class="mb-0 text-muted small">@transaction</p>
+                                                <h6 class="mb-1 fw-semibold withdraw">Withdraw</h6>
+                                                <p class="mb-0 text-muted small">@transaction.Amount</p>
+                                                <p class="mb-0 text-muted small">@transaction.TimeOfTransaction</p>
+                                                <p class="mb-0 text-muted small">@transaction.Status</p>
+                                                <p class="mb-0 text-muted small">@transaction.UpdatedBalance</p>
                                             </div>
                                         </div>
                                     </li>
                                 }
                                 else {
                                     <li class="transaction-item">
-                                        <div class="d-flex align-items-center">
+                                        <div class="align-items-center w-100 p-3 info-background rounded-3">
                                             <div class="">
-                                                <h6 class="mb-1 fw-semibold">Info</h6>
+                                                <h6 class="mb-1 fw-semibold info">Info</h6>
                                                 <p class="mb-0 text-muted small">@transaction</p>
                                             </div>
                                         </div>
@@ -167,6 +172,11 @@
         border: none;
         border-radius: 15px;
         overflow: hidden;
+    }
+
+    .bg-infoo
+    {
+        background: #4e73df;
     }
 
     /* Gradient Backgrounds */
@@ -248,13 +258,20 @@
     }
 
     .withdraw {
-        background-color: rgba(220, 53, 69, 0.1);
         color: #dc3545;
     }
     .withdraw-background {
         background-color: rgba(220, 53, 69, 0.1);
     }
 
+    .info-background {
+        background-color: #e9ecef;
+        /* opacity: 10%; */
+    }
+
+    .info {
+        color: #36454F;
+    }
     /* Empty State */
     .empty-icon-wrapper {
         height: 80px;
