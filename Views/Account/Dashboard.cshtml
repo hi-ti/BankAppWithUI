@@ -99,27 +99,26 @@
                         {
                             <li class="transaction-item">
                                 <div class="d-flex align-items-center">
-                                    <span class="transaction-icon @(transaction.Type == TransactionType.Deposit ? "deposit" : "withdraw")">
-                                        <i class="bi @(transaction.Type == TransactionType.Deposit ? "bi-arrow-down-circle" : "bi-arrow-up-circle")"></i>
-                                    </span>
+                                    @* <span class="transaction-icon @(transaction.Type == TransactionType.Deposit ? "deposit" : "withdraw")"> *@
+                                    @*     <i class="bi @(transaction.Type == TransactionType.Deposit ? "bi-arrow-down-circle" : "bi-arrow-up-circle")"></i> *@
+                                    @* </span> *@
                                     <div>
                                         <h6 class="mb-1 fw-semibold @(transaction.Type == TransactionType.Deposit ? "deposit" : "withdraw")">
                                             @transaction.Type
                                         </h6>
-                                        <p class="mb-0 text-muted small">
-                                            Amount: ₹@transaction.Amount.ToString("N0")
-                                            <span class="badge @(transaction.Status == TransactionStatus.Success ? "bg-success" : "bg-danger") ms-2">
-                                                @transaction.Status
-                                            </span>
-                                        </p>
+                                        <span class="transaction-date text-muted small d-block">@transaction.TimeOfTransaction</span>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <span class="text-muted">₹@transaction.UpdatedBalance</span>
+                                    @* <span class="text-muted">₹@transaction.UpdatedBalance</span> *@
+                                    <p class="mb-0 text-muted small">
+                                        ₹@transaction.Amount.ToString("N0")
+                                        <span class="badge @(transaction.Status == TransactionStatus.Success ? "bg-success" : "bg-danger") ms-2">
+                                            @transaction.Status
+                                        </span>
+                                    </p>
                                 </div>
-                                <div class="text-end">
-                                    <span class="transaction-date text-muted small d-block">@transaction.TimeOfTransaction</span>
-                                </div>
+
                             </li>
                         }
                     </ul>
